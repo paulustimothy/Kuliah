@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Toko Buku - Book Store Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: {
+                50: "#eff6ff",
+                100: "#dbeafe",
+                500: "#3b82f6",
+                600: "#2563eb",
+                700: "#1d4ed8",
+              },
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="bg-gray-50 min-h-screen">
+    <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      <!-- Header -->
+      <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div class="text-center">
+            <h1
+              class="text-3xl font-bold text-gray-900 flex items-center justify-center gap-3"
+            >
+              <i class="fas fa-book text-blue-600"></i>
+              Toko Buku
+            </h1>
+            <p class="mt-2 text-gray-600">Book Store Management System</p>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Content -->
+      <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Controls Section -->
+        <div
+          class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8"
+        >
+          <div
+            class="flex flex-col sm:flex-row gap-4 items-center justify-between"
+          >
+            <!-- Search -->
+            <div class="flex-1 max-w-md">
+              <div class="relative">
+                <div
+                  class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                >
+                  <i class="fas fa-search text-gray-400"></i>
+                </div>
+                <input
+                  type="text"
+                  id="searchInput"
+                  class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Search books..."
+                />
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex gap-3">
+              <button
+                id="searchBtn"
+                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+              >
+                <i class="fas fa-search mr-2"></i>
+                Search
+              </button>
+              <button
+                id="addBookBtn"
+                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
+              >
+                <i class="fas fa-plus mr-2"></i>
+                Add Book
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div id="loadingIndicator" class="hidden text-center py-12">
+          <div
+            class="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-600"
+          >
+            <i class="fas fa-spinner fa-spin mr-2"></i>
+            Loading books...
+          </div>
+        </div>
+
+        <!-- Books Grid -->
+        <div
+          id="booksGrid"
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+        >
+          <!-- Books will be dynamically loaded here -->
+        </div>
+
+        <!-- No Books Message -->
+        <div id="noBooksMessage" class="hidden text-center py-12">
+          <div class="max-w-md mx-auto">
+            <i class="fas fa-book-open text-6xl text-gray-300 mb-4"></i>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">
+              No books found
+            </h3>
+            <p class="text-gray-500 mb-6">
+              Start by adding your first book to the store!
+            </p>
+            <button
+              id="addFirstBookBtn"
+              class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+            >
+              <i class="fas fa-plus mr-2"></i>
+              Add Your First Book
+            </button>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <div id="pagination" class="mt-8 flex justify-center">
+          <!-- Pagination will be dynamically generated here -->
+        </div>
+      </main>
+
+      <!-- Book Modal -->
+      <div
+        id="bookModal"
+        class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
+      >
+        <div
+          class="relative top-20 mx-auto p-5 border w-11/12 max-w-2xl shadow-lg rounded-md bg-white"
+        >
+          <!-- Modal Header -->
+          <div
+            class="flex items-center justify-between pb-4 border-b border-gray-200"
+          >
+            <h3 id="modalTitle" class="text-lg font-medium text-gray-900">
+              Add New Book
+            </h3>
+            <button
+              id="closeModal"
+              class="text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <i class="fas fa-times text-xl"></i>
+            </button>
+          </div>
+
+          <!-- Modal Body -->
+          <form id="bookForm" class="mt-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <!-- Title -->
+              <div class="md:col-span-2">
+                <label
+                  for="title"
+                  class="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Title <span class="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="title"
+                  name="title"
+                  required
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                />
+                <div
+                  id="titleError"
+                  class="mt-1 text-sm text-red-600 hidden"
+                ></div>
+              </div>
+
+              <!-- Author -->
+              <div class="md:col-span-2">
+                <label
+                  for="author"
+                  class="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Author <span class="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="author"
+                  name="author"
+                  required
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                />
+                <div
+                  id="authorError"
+                  class="mt-1 text-sm text-red-600 hidden"
+                ></div>
+              </div>
+
+              <!-- Published Date -->
+              <div>
+                <label
+                  for="publishedDate"
+                  class="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Published Date
+                </label>
+                <input
+                  type="date"
+                  id="publishedDate"
+                  name="published_date"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+
+              <!-- Genre -->
+              <div>
+                <label
+                  for="genre"
+                  class="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Genre
+                </label>
+                <input
+                  type="text"
+                  id="genre"
+                  name="genre"
+                  placeholder="e.g., Fiction, Science"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+
+              <!-- Price -->
+              <div>
+                <label
+                  for="price"
+                  class="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Price
+                </label>
+                <div class="relative">
+                  <div
+                    class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                  >
+                    <span class="text-gray-500 sm:text-sm">$</span>
+                  </div>
+                  <input
+                    type="number"
+                    id="price"
+                    name="price"
+                    step="0.01"
+                    min="0"
+                    placeholder="0.00"
+                    class="w-full pl-7 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+              </div>
+
+              <!-- Stock -->
+              <div>
+                <label
+                  for="stock"
+                  class="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Stock
+                </label>
+                <input
+                  type="number"
+                  id="stock"
+                  name="stock"
+                  min="0"
+                  placeholder="0"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+
+              <!-- Description -->
+              <div class="md:col-span-2">
+                <label
+                  for="description"
+                  class="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Description
+                </label>
+                <textarea
+                  id="description"
+                  name="description"
+                  rows="4"
+                  placeholder="Enter book description..."
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                ></textarea>
+              </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div
+              class="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200"
+            >
+              <button
+                type="button"
+                id="cancelBtn"
+                class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                id="saveBtn"
+                class="px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+              >
+                <i class="fas fa-save mr-2"></i>
+                Save Book
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Delete Confirmation Modal -->
+      <div
+        id="deleteModal"
+        class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
+      >
+        <div
+          class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white"
+        >
+          <!-- Modal Header -->
+          <div
+            class="flex items-center justify-between pb-4 border-b border-gray-200"
+          >
+            <h3 class="text-lg font-medium text-gray-900">Confirm Delete</h3>
+            <button
+              id="closeDeleteModal"
+              class="text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <i class="fas fa-times text-xl"></i>
+            </button>
+          </div>
+
+          <!-- Modal Body -->
+          <div class="mt-6 text-center">
+            <div
+              class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4"
+            >
+              <i class="fas fa-exclamation-triangle text-red-600"></i>
+            </div>
+            <p class="text-sm text-gray-500 mb-2">
+              Are you sure you want to delete this book?
+            </p>
+            <p
+              id="deleteBookTitle"
+              class="text-sm font-medium text-gray-900 mb-4"
+            ></p>
+            <p class="text-xs text-red-600">This action cannot be undone.</p>
+          </div>
+
+          <!-- Modal Footer -->
+          <div
+            class="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200"
+          >
+            <button
+              type="button"
+              id="cancelDeleteBtn"
+              class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              id="confirmDeleteBtn"
+              class="px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
+            >
+              <i class="fas fa-trash mr-2"></i>
+              Delete Book
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Toast Container -->
+      <div
+        id="toastContainer"
+        class="fixed top-4 right-4 z-50 space-y-2 w-64"
+      ></div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
