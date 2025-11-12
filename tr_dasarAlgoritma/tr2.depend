@@ -1,0 +1,12 @@
+# depslib dependency file v1.0
+1751694302 source:/home/paulustimothy/Desktop/C/tr2/main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<time.h>
+	<stdarg.h>
+	<windows.h>
+	<conio.h>
+	<unistd.h>
+	<termios.h>
+
